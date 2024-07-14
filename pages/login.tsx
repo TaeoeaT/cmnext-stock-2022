@@ -12,59 +12,63 @@ import { TextField } from "formik-material-ui";
 import { Formik, Form, Field, FormikProps } from "formik";
 import Router, { useRouter } from "next/router";
 import { Box } from "@mui/material";
-
+import { useAppDispatch } from "@/store/store";
+import { signIn } from "@/store/slices/userSlice";
+import withAuth from "@/components/withAuth";
 
 type Props = {};
 
-const showForm = ({
-  values,
-  setFieldValue,
-  isValid,
-  dirty,
-  handleSubmit,
-}: FormikProps<any>) => {
-  return (
-    <Form onSubmit={handleSubmit}>
-      <Field
-        component={TextField}
-        name="username"
-        id="username"
-        margin="normal"
-        required
-        fullWidth
-        label="Username"
-        autoComplete="email"
-        autoFocus
-      />
-      <Field
-        component={TextField}
-        name="password"
-        margin="normal"
-        required
-        fullWidth
-        label="Password"
-        type="password"
-        id="password"
-        autoComplete="current-password"
-      />
+const Login = ({}: Props) => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-      <Button type="submit" fullWidth variant="contained" color="primary">
-        Login
-      </Button>
-      <Button
-        fullWidth
-        size="small"
-        color="primary"
-        onClick={() => Router.push("/register")}
-      >
-        Register
-      </Button>
-    </Form>
-  );
-};
+  const showForm = ({
+    values,
+    setFieldValue,
+    isValid,
+    dirty,
+    handleSubmit,
+  }: FormikProps<any>) => {
+    return (
+      <Form onSubmit={handleSubmit}>
+        <Field
+          component={TextField}
+          name="username"
+          id="username"
+          margin="normal"
+          required
+          fullWidth
+          label="Username"
+          autoComplete="email"
+          autoFocus
+        />
+        <Field
+          component={TextField}
+          name="password"
+          margin="normal"
+          required
+          fullWidth
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+        />
 
+        <Button type="submit" fullWidth variant="contained" color="primary">
+          Login
+        </Button>
+        <Button
+          fullWidth
+          size="small"
+          color="primary"
+          onClick={() => router.push("/register")}
+        >
+          Register
+        </Button>
+      </Form>
+    );
+  };
 
-export default function login({}: Props) {
   return (
     <React.Fragment>
       <Box
@@ -86,7 +90,12 @@ export default function login({}: Props) {
             <Formik
               initialValues={{ username: "", password: "" }}
               onSubmit={async (values) => {
-                alert(JSON.stringify(values))
+                const response = await dispatch(signIn(values));
+                if (response.meta.requestStatus === "rejected") {
+                  alert("Login failed");
+                } else {
+                  router.push("/stock");
+                }
               }}
             >
               {(props) => showForm(props)}
@@ -109,4 +118,6 @@ export default function login({}: Props) {
       </Box>
     </React.Fragment>
   );
-}
+};
+
+export default withAuth(Login);

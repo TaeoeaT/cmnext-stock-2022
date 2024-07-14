@@ -1,16 +1,18 @@
 import Layout from "@/components/Layouts/Layout";
-import { userSelector } from "@/store/slices/userSlice";
+import withAuth from "@/components/withAuth";
+import { userSelector, resetUsername, signUp } from "@/store/slices/userSlice";
+import { useAppDispatch } from "@/store/store";
 import React from "react";
 import { useSelector } from "react-redux";
 type Props = {};
 
-export default function Index({}: Props) {
-  
+const Stock = ({}: Props) => {
   const user = useSelector(userSelector);
+  const dispatch = useAppDispatch();
 
   return (
-    <Layout>
-      <div>index {user.username}</div>
-    </Layout>
+    <></>
   );
 }
+
+export default withAuth(Stock);
